@@ -1,0 +1,16 @@
+[project]
+name = "link-sharing-app"
+version = "0.0.1"
+description = ""
+dependencies = ["flask"]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["link-sharing-app"]
