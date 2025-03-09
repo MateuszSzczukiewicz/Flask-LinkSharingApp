@@ -1,5 +1,5 @@
 [project]
-name = "link-sharing-app"
+name = "link_sharing_app"
 version = "0.0.1"
 description = ""
 dependencies = ["flask"]
@@ -13,4 +13,4 @@ testpaths = ["tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["link-sharing-app"]
+source = ["link_sharing_app"]
