@@ -1,100 +1,71 @@
-import functools
-
+import datetime
+import jwt
+import os
+from dotenv import load_dotenv
 from flask import (
     Blueprint,
-    flash,
-    g,
-    redirect,
-    render_template,
+    jsonify,
     request,
-    session,
-    url_for,
 )
 from werkzeug.security import check_password_hash, generate_password_hash
-
 from .db import get_db
+
+load_dotenv()
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for("auth.login"))
-
-        return view(**kwargs)
-
-    return wrapped_view
-
-
-@bp.before_app_request
-def load_logged_in_user():
-    user_id = session.get("user_id")
-
-    if user_id is None:
-        g.user = None
-    else:
-        g.user = (
-            get_db().execute("SELECT * FROM user WHERE id = ?", (user_id,)).fetchone()
-        )
-
-
-@bp.route("/register", methods=("GET", "POST"))
+@bp.route("/register", methods=["POST"])
 def register():
-    if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
-        db = get_db()
-        error = None
+    data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
+    db = get_db()
 
-        if not email:
-            error = "Email is required."
-        elif not password:
-            error = "Password is required."
+    if not email:
+        return jsonify({"error": "email is required"}), 400
+    elif not password:
+        return jsonify({"error": "email is required"}), 400
 
-        if error is None:
-            try:
-                db.execute(
-                    "INSERT INTO user (email, password) VALUES (?, ?)",
-                    (email, generate_password_hash(password)),
-                )
-                db.commit()
-            except db.IntegrityError:
-                error = f"User {email} is already registered."
-            else:
-                return redirect(url_for("auth.login"))
-
-        flash(error)
-
-    return render_template("auth/register.html")
+    try:
+        db.execute(
+            "INSERT INTO user (email, password) VALUES (?, ?)",
+            (email, generate_password_hash(password)),
+        )
+        db.commit()
+        return jsonify({"message": "User registered successfully"}), 201
+    except db.IntegrityError:
+        return jsonify({"error": "User is already registered."}), 409
 
 
-@bp.route("/login", methods=("GET", "POST"))
+@bp.route("/login", methods=["POST"])
 def login():
-    if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
-        db = get_db()
-        error = None
-        user = db.execute("SELECT * FROM user WHERE email = ?", (email,)).fetchone()
+    data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
+    db = get_db()
 
-        if user is None:
-            error = "Incorrect email."
-        elif not check_password_hash(user["password"], password):
-            error = "Incorrect password."
+    secret_key = os.getenv("secret_key")
+    if not secret_key:
+        raise ValueError("No secret key set.")
 
-        if error is None:
-            session.clear()
-            session["user_id"] = user["id"]
-            return redirect(url_for("index"))
+    if not email:
+        return jsonify({"error": "email is required"}), 400
+    elif not password:
+        return jsonify({"error": "email is required"}), 400
 
-        flash(error)
+    user = db.execute("SELECT * FROM user WHERE email = ?", (email,)).fetchone()
 
-    return render_template("auth/login.html")
+    if user is None:
+        return jsonify({"error": "User is not found."}), 404
+    elif not check_password_hash(user["password"], password):
+        return jsonify({"error": "Incorrect password."}), 401
 
+    payload_data = {
+        "user_id": user["id"],
+        "exp": datetime.datetime.now() + datetime.timedelta(hours=24),
+    }
 
-@bp.route("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for("index"))
+    token = jwt.encode(payload=payload_data, key=secret_key)
+
+    return jsonify({"message": "User logged in successfully", "token": token}), 200
