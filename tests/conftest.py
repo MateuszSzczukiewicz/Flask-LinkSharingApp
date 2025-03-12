@@ -38,13 +38,10 @@ class AuthActions:
     def __init__(self, client):
         self._client = client
 
-    def login(self, email="test@gmail.com", password="test"):
+    def login(self, email="test@gmail.com", password="strong_password"):
         return self._client.post(
-            "/auth/login", data={"email": email, "password": password}
+            "/auth/login", json={"email": email, "password": password}
         )
-
-    def logout(self):
-        return self._client.get("/auth/logout")
 
 
 @pytest.fixture

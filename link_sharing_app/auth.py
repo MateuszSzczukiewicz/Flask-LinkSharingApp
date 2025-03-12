@@ -17,15 +17,22 @@ bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @bp.route("/register", methods=["POST"])
 def register():
-    data = request.get_json()
+    if not request.is_json:
+        return jsonify({"error": "Invalid JSON data."}), 415
+
+    data = request.get_json(silent=True)
+
+    if data is None:
+        return jsonify({"error": "Invalid JSON data."}), 400
+
     email = data.get("email")
     password = data.get("password")
     db = get_db()
 
     if not email:
-        return jsonify({"error": "email is required"}), 400
+        return jsonify({"error": "Email is required."}), 400
     elif not password:
-        return jsonify({"error": "email is required"}), 400
+        return jsonify({"error": "Password is required."}), 400
 
     try:
         db.execute(
@@ -33,26 +40,32 @@ def register():
             (email, generate_password_hash(password)),
         )
         db.commit()
-        return jsonify({"message": "User registered successfully"}), 201
+        return jsonify({"message": "User registered successfully."}), 201
     except db.IntegrityError:
         return jsonify({"error": "User is already registered."}), 409
 
 
 @bp.route("/login", methods=["POST"])
 def login():
-    data = request.get_json()
+    if not request.is_json:
+        return jsonify({"error": "Invalid JSON data."}), 415
+    data = request.get_json(silent=True)
+
+    if data is None:
+        return jsonify({"error": "Invalid JSON data."}), 400
+
     email = data.get("email")
     password = data.get("password")
     db = get_db()
 
-    secret_key = os.getenv("secret_key")
+    secret_key = os.getenv("SECRET_KEY")
     if not secret_key:
         raise ValueError("No secret key set.")
 
     if not email:
-        return jsonify({"error": "email is required"}), 400
+        return jsonify({"error": "Email is required."}), 400
     elif not password:
-        return jsonify({"error": "email is required"}), 400
+        return jsonify({"error": "Password is required."}), 400
 
     user = db.execute("SELECT * FROM user WHERE email = ?", (email,)).fetchone()
 
@@ -68,4 +81,4 @@ def login():
 
     token = jwt.encode(payload=payload_data, key=secret_key)
 
-    return jsonify({"message": "User logged in successfully", "token": token}), 200
+    return jsonify({"message": "User logged in successfully.", "token": token}), 200
