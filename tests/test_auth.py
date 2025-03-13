@@ -6,7 +6,6 @@ def test_register(client, app):
     response = client.post(
         "/auth/register", json={"email": "test@test.com", "password": "strong_password"}
     )
-
     assert response.status_code == 201
     assert response.get_json() == {"message": "User registered successfully."}
 
@@ -29,8 +28,7 @@ def test_register(client, app):
 )
 def test_register_validate_input(client, email, password, message, status_code):
     client.post(
-        "/auth/register",
-        json={"email": "test@test.com", "password": "strong_password"},
+        "/auth/register", json={"email": "test@test.com", "password": "strong_password"}
     )
     response = client.post(
         "/auth/register", json={"email": email, "password": password}
@@ -39,12 +37,30 @@ def test_register_validate_input(client, email, password, message, status_code):
     assert response.get_json()["error"] == message
 
 
-def test_register_invalid_json(client):
+def test_register_invalid_json_format(client):
     response = client.post(
         "/auth/register", data="Invalid JSON", content_type="application/json"
     )
     assert response.status_code == 400
     assert response.get_json()["error"] == "Invalid JSON data."
+
+
+def test_register_invalid_json_header(client):
+    response = client.post("/auth/register", data='{"email": "a", "password": "b"}')
+    assert response.status_code == 415
+    assert response.get_json()["error"] == "Invalid JSON data."
+
+
+def test_register_missing_email(client):
+    response = client.post("/auth/register", json={"password": "strong_password"})
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "Email is required."
+
+
+def test_register_missing_password(client):
+    response = client.post("/auth/register", json={"email": "test@example.com"})
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "Password is required."
 
 
 def test_login(client, auth):
@@ -55,11 +71,11 @@ def test_login(client, auth):
     assert register_response.status_code == 201
 
     auth_response = auth.login("email@gmail.com", "strong_password")
-
     assert auth_response.status_code == 200
-    assert auth_response.get_json()["message"] == "User logged in successfully."
-    assert "token" in auth_response.get_json()
-    assert auth_response.get_json()["token"]
+    json_data = auth_response.get_json()
+    assert json_data["message"] == "User logged in successfully."
+    assert "token" in json_data
+    assert json_data["token"]
 
 
 @pytest.mark.parametrize(
@@ -79,12 +95,30 @@ def test_login_validate_input(client, auth, email, password, message, status_cod
     assert response.get_json()["error"] == message
 
 
-def test_login_invalid_json(client):
+def test_login_invalid_json_format(client):
     response = client.post(
         "/auth/login", data="Invalid JSON", content_type="application/json"
     )
     assert response.status_code == 400
     assert response.get_json()["error"] == "Invalid JSON data."
+
+
+def test_login_missing_json_header(client):
+    response = client.post("/auth/login", data='{"email": "a", "password": "b"}')
+    assert response.status_code == 415
+    assert response.get_json()["error"] == "Invalid JSON data."
+
+
+def test_login_missing_email(client):
+    response = client.post("/auth/login", json={"password": "strong_password"})
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "Email is required."
+
+
+def test_login_missing_password(client):
+    response = client.post("/auth/login", json={"email": "test@gmail.com"})
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "Password is required."
 
 
 def test_login_nonexisten_user(auth):
@@ -109,7 +143,6 @@ def test_login_incorrect_password(client):
 def test_login_success(client):
     email = "email@gmail.com"
     password = "strong_password"
-
     client.post(
         "/auth/register",
         json={"email": email, "password": password},
@@ -117,3 +150,16 @@ def test_login_success(client):
     response = client.post("/auth/login", json={"email": email, "password": password})
     assert response.status_code == 200
     assert "token" in response.get_json()
+
+
+def test_login_no_secret_key(client, monkeypatch):
+    client.post(
+        "/auth/register",
+        json={"email": "test@gmail.com", "password": "strong_password"},
+    )
+    monkeypatch.delenv("SECRET_KEY", raising=False)
+    with pytest.raises(ValueError, match="No secret key set."):
+        client.post(
+            "/auth/login",
+            json={"email": "test@gmail.com", "password": "strong_password"},
+        )
