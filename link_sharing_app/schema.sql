@@ -14,6 +14,6 @@ CREATE TABLE link (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     platform TEXT NOT NULL CHECK ( platform in ('GitHub', 'Frontend_Mentor', 'Twitter', 'LinkedIn', 'YouTube', 'Facebook', 'Twitch', 'Dev.to', 'Codewars', 'Codepen', 'freeCodeCamp', 'GitLab', 'Hashnode', 'Stack_Overflow') ),
-    url TEXT UNIQUE NOT NULL
+    url TEXT UNIQUE NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 )
