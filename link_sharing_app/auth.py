@@ -36,7 +36,7 @@ def register():
 
     try:
         db.execute(
-            "INSERT INTO user (email, password) VALUES (?, ?)",
+            "INSERT INTO users (email, password) VALUES (?, ?)",
             (email, generate_password_hash(password)),
         )
         db.commit()
@@ -67,7 +67,7 @@ def login():
     elif not password:
         return jsonify({"error": "Password is required."}), 400
 
-    user = db.execute("SELECT * FROM user WHERE email = ?", (email,)).fetchone()
+    user = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
 
     if user is None:
         return jsonify({"error": "User is not found."}), 404

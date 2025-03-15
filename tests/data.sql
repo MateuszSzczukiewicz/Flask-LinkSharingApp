@@ -1,4 +1,4 @@
-INSERT INTO user (email, password, first_name, last_name, image_url)
+INSERT INTO users (email, password, first_name, last_name, image_url)
 VALUES
 (
     'test@gmail.com',
@@ -15,7 +15,7 @@ VALUES
     'https://link_to_image2.com'
 );
 
-INSERT INTO link (user_id, platform, url)
+INSERT INTO links (user_id, platform, url)
 VALUES
 (
     '1',

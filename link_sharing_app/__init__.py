@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from . import db
 from . import auth
+from . import user
 from . import links
 
 
@@ -25,6 +26,7 @@ def create_app(test_config=None):
     db.init_app(app)
 
     app.register_blueprint(auth.bp)
+    app.register_blueprint(user.bp)
     app.register_blueprint(links.bp)
 
     return app

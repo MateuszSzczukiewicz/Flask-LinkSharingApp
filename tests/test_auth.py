@@ -12,7 +12,7 @@ def test_register(client, app):
     with app.app_context():
         assert (
             get_db()
-            .execute("SELECT * FROM user WHERE email = 'test@test.com'")
+            .execute("SELECT * FROM users WHERE email = 'test@test.com'")
             .fetchone()
             is not None
         )
