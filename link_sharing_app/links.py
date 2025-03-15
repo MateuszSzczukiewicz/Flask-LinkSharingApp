@@ -94,7 +94,7 @@ def edit_link_by_id(id):
 
     try:
         db.execute(
-            f"UPDATE links SET {set_clause} WHERE ID = ?",
+            f"UPDATE links SET {set_clause} WHERE id = ?",
             tuple(values) + (id,),
         )
         db.commit()
