@@ -26,15 +26,12 @@ def get_all_links(user_id):
     if user is None:
         return jsonify({"error": "User not found."}), 404
 
-    try:
-        links = db.execute(
-            "SELECT * FROM links WHERE user_id = ? ORDER BY created DESC",
-            (user_id,),
-        ).fetchall()
+    links = db.execute(
+        "SELECT * FROM links WHERE user_id = ? ORDER BY created DESC",
+        (user_id,),
+    ).fetchall()
 
-        return jsonify({"data": links, "message": "Success."}), 200
-    except db.IntegrityError:
-        return jsonify({"error": "Database integrity error"}), 500
+    return jsonify({"data": links, "message": "Success."}), 200
 
 
 @bp.route("/", methods=["POST"])

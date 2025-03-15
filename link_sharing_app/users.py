@@ -21,18 +21,15 @@ def get_user(id):
 def get_user_by_id(id):
     db = get_db()
 
-    try:
-        user = db.execute(
-            "SELECT * FROM users WHERE id = ?",
-            (id,),
-        ).fetchone()
+    user = db.execute(
+        "SELECT * FROM users WHERE id = ?",
+        (id,),
+    ).fetchone()
 
-        if user is None:
-            return jsonify({"error": "User not found."}), 404
+    if user is None:
+        return jsonify({"error": "User not found."}), 404
 
-        return jsonify({"data": user, "message": "Success."}), 200
-    except db.IntegrityError:
-        return jsonify({"error": "Database integrity error"}), 500
+    return jsonify({"data": user, "message": "Success."}), 200
 
 
 @bp.route("/<int:id>", methods=["PATCH"])
