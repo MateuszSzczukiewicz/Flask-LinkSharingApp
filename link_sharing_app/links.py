@@ -4,7 +4,7 @@ from flask import (
     request,
 )
 from .db import get_db
-from .users import get_user_by_id
+from .users import get_user
 
 bp = Blueprint("links", __name__, url_prefix="/links")
 
@@ -20,7 +20,7 @@ def get_link(id):
 
 @bp.route("/<int:user_id>", methods=["GET"])
 def get_all_links(user_id):
-    user = get_user_by_id(user_id)
+    user = get_user(user_id)
     db = get_db()
 
     if user is None:
@@ -31,7 +31,7 @@ def get_all_links(user_id):
         (user_id,),
     ).fetchall()
 
-    return jsonify({"data": dict(links), "message": "Success."}), 200
+    return jsonify({"data": [dict(row) for row in links], "message": "Success."}), 200
 
 
 @bp.route("/", methods=["POST"])
@@ -41,7 +41,7 @@ def create_link():
 
     data = request.get_json(silent=True)
 
-    if data is None:
+    if not data:
         return jsonify({"error": "Invalid JSON data."}), 400
 
     user_id = data.get("user_id")
