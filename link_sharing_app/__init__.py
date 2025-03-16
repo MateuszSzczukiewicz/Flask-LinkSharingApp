@@ -2,7 +2,7 @@ import os
 from flask import Flask
 from . import db
 from . import auth
-from . import user
+from . import users
 from . import links
 
 
@@ -10,7 +10,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY="dev",
-        DATABASE=os.path.join(app.instance_path, "link_sharing_app.sqlite"),
+        DATABASE=f"file:{os.path.join(app.instance_path, 'link_sharing_app.sqlite')}?mode=rwc",
     )
 
     if test_config is None:
@@ -26,7 +26,7 @@ def create_app(test_config=None):
     db.init_app(app)
 
     app.register_blueprint(auth.bp)
-    app.register_blueprint(user.bp)
+    app.register_blueprint(users.bp)
     app.register_blueprint(links.bp)
 
     return app
