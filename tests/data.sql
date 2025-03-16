@@ -15,7 +15,7 @@ VALUES
     'https://link_to_image2.com'
 );
 
-INSERT INTO links (user_id, platform, url)
+INSERT INTO links (user_id, platform, url, created)
 VALUES
 (1, 'GitHub', 'https://github.com/TestTestowy', '2025-03-14 00:00:00'),
 (2, 'LinkedIn', 'https://www.linkedin.com/in/anonimowy-anonim', '2025-03-14 00:00:00');
