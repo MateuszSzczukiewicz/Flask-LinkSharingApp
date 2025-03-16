@@ -11,7 +11,7 @@ bp = Blueprint("users", __name__, url_prefix="/users")
 def get_user(id):
     db = get_db()
     user = db.execute(
-        "SELECT * FROM users WHERE id = ?",
+        "SELECT email, first_name, last_name, image_url FROM users WHERE id = ?",
         (id,),
     ).fetchone()
     return user
@@ -19,17 +19,12 @@ def get_user(id):
 
 @bp.route("/<int:id>", methods=["GET"])
 def get_user_by_id(id):
-    db = get_db()
-
-    user = db.execute(
-        "SELECT * FROM users WHERE id = ?",
-        (id,),
-    ).fetchone()
+    user = get_user(id)
 
     if user is None:
         return jsonify({"error": "User not found."}), 404
 
-    return jsonify({"data": user, "message": "Success."}), 200
+    return jsonify({"data": dict(user), "message": "Success."}), 200
 
 
 @bp.route("/<int:id>", methods=["PATCH"])

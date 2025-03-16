@@ -31,7 +31,7 @@ def get_all_links(user_id):
         (user_id,),
     ).fetchall()
 
-    return jsonify({"data": links, "message": "Success."}), 200
+    return jsonify({"data": dict(links), "message": "Success."}), 200
 
 
 @bp.route("/", methods=["POST"])
