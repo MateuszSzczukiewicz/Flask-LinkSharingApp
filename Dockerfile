@@ -20,6 +20,6 @@ FROM builder as dev-envs
 
 RUN apk update && apk add git bash
 
-RUN addgroup -S docker && adduser -S --shell /bin/bash --ingroup docker
+RUN addgroup -S docker && adduser -S --shell /bin/bash --ingroup docker docker
 
 COPY --from=gloursdocker/docker / /
