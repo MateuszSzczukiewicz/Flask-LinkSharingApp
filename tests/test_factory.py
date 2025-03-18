@@ -1,10 +1,14 @@
 import os
 from link_sharing_app import create_app
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def test_create_app_default_config(tmp_path):
     app = create_app({"DATABASE": str(tmp_path / "test_db.sqlite")})
-    assert app.config["SECRET_KEY"] == "dev"
+    secret_key = os.getenv("SECRET_KEY")
+    assert app.config["SECRET_KEY"] == secret_key
     assert app.config["DATABASE"] == str(tmp_path / "test_db.sqlite")
 
 
