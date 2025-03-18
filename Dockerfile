@@ -18,7 +18,7 @@ CMD ["-m", "flask", "--app", "link_sharing_app", "run"]
 
 FROM builder as dev-envs
 
-RUN apk update && apk add git
+RUN apk update && apk add git bash
 
 RUN addgroup -S docker && adduser -S --shell /bin/bash --ingroup docker
 
