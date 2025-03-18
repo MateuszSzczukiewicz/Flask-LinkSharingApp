@@ -1,15 +1,21 @@
 import os
 from flask import Flask
+from dotenv import load_dotenv
 from . import db
 from . import auth
 from . import users
 from . import links
 
+load_dotenv()
+
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
+
+    secret_key = os.getenv("SECRET_KEY")
+
     app.config.from_mapping(
-        SECRET_KEY="dev",
+        SECRET_KEY=secret_key,
         DATABASE=f"file:{os.path.join(app.instance_path, 'link_sharing_app.sqlite')}?mode=rwc",
     )
 
