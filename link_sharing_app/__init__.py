@@ -35,4 +35,8 @@ def create_app(test_config=None):
     app.register_blueprint(users.bp)
     app.register_blueprint(links.bp)
 
+    @app.route("/")
+    def health_check():
+        return {"status": "ok"}, 200
+
     return app

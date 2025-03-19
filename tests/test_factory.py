@@ -5,6 +5,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def test_app_health():
+    app = create_app()
+    client = app.test_client()
+    response = client.get("/")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data == {"status": "ok"}
+
+
 def test_create_app_default_config(tmp_path):
     app = create_app({"DATABASE": str(tmp_path / "test_db.sqlite")})
     secret_key = os.getenv("SECRET_KEY")

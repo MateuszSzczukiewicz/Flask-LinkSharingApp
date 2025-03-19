@@ -12,7 +12,7 @@ WORKDIR /app
 
 COPY --from=builder /app/dist/*.whl ./
 
-RUN pip install --no-cache-dir *.whl waitress
+RUN pip install --no-cache-dir *.whl
 
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=8000
