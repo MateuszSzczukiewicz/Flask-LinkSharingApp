@@ -2,3 +2,5 @@ flask
 python-dotenv
 pyjwt
 pytest
+coverage
+waitress

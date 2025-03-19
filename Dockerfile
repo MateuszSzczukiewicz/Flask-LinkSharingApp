@@ -1,25 +1,27 @@
-FROM --platform=$BUILDPLATFORM python:3.13-alpine AS builder
+FROM python:3.13-alpine AS builder
 
 WORKDIR /app
 
-COPY requirements.txt /app
-
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip3 install -r requirements.txt
-
 COPY . .
+
+RUN pip install --no-cache-dir build
+
+RUN python -m build --wheel
+
+FROM python:3.13-alpine AS runner
+
+WORKDIR /app
+
+COPY --from=builder /app/dist/*.whl ./
+
+RUN pip install --no-cache-dir *.whl waitress
 
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=8000
-ENV FLASK_APP=link_sharing_app
 
-ENTRYPOINT ["python3"]
-CMD ["-m", "flask", "--app", "link_sharing_app", "run"]
+EXPOSE 8000
 
-FROM builder as dev-envs
+COPY scripts/buildprod.sh /app
+RUN chmod +x /app/scripts/buildprod.sh
 
-RUN apk update && apk add git bash
-
-RUN addgroup -S docker && adduser -S --shell /bin/bash --ingroup docker docker
-
-COPY --from=gloursdocker/docker / /
+ENTRYPOINT ["/app/scripts/buildprod.sh"]

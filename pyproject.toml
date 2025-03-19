@@ -2,7 +2,14 @@
 name = "link_sharing_app"
 version = "1.0.0"
 description = ""
-dependencies = ["flask", "pytest", "coverage", "python-dotenv"]
+dependencies = [
+    "flask",
+    "pytest",
+    "coverage",
+    "python-dotenv",
+    "waitress",
+    "pyjwt",
+]
 
 [build-system]
 requires = ["flit_core<4"]
