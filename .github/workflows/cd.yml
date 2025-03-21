@@ -6,13 +6,10 @@ on:
 
 jobs:
   deploy:
-    name: Deploy
+    name: Deploy Flask App
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-
       - name: Check out code
         uses: actions/checkout@v4
 
@@ -33,7 +30,11 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/flask-linksharingapp:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/flask-linksharingapp:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/flask-linksharingapp:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/flask-linksharingapp:latest
+          cache-to: type=inline
 
       - name: Deploy to server via SSH
         uses: appleboy/ssh-action@v0.1.5
@@ -42,6 +43,10 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /srv/flask-linksharingapp
+            cd /srv/link-sharing-app/backend
             docker compose pull
             docker compose up -d
+
+      - name: Healthcheck
+        run: |
+          curl -f http://${{ secrets.SERVER_HOST }}/health || exit 1

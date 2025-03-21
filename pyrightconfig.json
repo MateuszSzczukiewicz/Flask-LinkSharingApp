@@ -1,0 +1,11 @@
+{
+  "include": ["."],
+  "typeCheckingMode": "strict",
+  "reportUnusedFunction": "none",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": true,
+  "reportUntypedFunctionDecorator": true,
+  "reportUntypedClassDecorator": true,
+  "reportUntypedCalls": true,
+  "reportUntypedDefs": true
+}

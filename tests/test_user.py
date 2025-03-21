@@ -1,5 +1,7 @@
 from flask import jsonify
+
 from link_sharing_app.db import get_db
+
 from .fake_db import FakeConnection
 
 
@@ -85,7 +87,9 @@ def test_edit_user_by_id_with_invalid_data(client):
 
 
 def test_edit_user_by_id_integrity_error(client, monkeypatch):
-    monkeypatch.setattr("link_sharing_app.users.get_db", lambda: FakeConnection())
+    monkeypatch.setattr(
+        "link_sharing_app.users.get_db",
+        lambda: FakeConnection())
 
     response = client.patch(
         "/users/1", json={"first_name": "NewName", "last_name": "NewLastName"}
@@ -122,7 +126,9 @@ def test_delete_user_not_found(client):
 
 
 def test_delete_user_by_id_integrity_error(client, monkeypatch):
-    monkeypatch.setattr("link_sharing_app.users.get_db", lambda: FakeConnection())
+    monkeypatch.setattr(
+        "link_sharing_app.users.get_db",
+        lambda: FakeConnection())
 
     response = client.delete("/users/1")
 

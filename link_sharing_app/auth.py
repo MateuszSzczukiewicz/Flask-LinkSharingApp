@@ -1,13 +1,11 @@
 import datetime
-import jwt
 import os
+
+import jwt
 from dotenv import load_dotenv
-from flask import (
-    Blueprint,
-    jsonify,
-    request,
-)
+from flask import Blueprint, jsonify, request
 from werkzeug.security import check_password_hash, generate_password_hash
+
 from .db import get_db
 
 load_dotenv()
@@ -67,7 +65,8 @@ def login():
     elif not password:
         return jsonify({"error": "Password is required."}), 400
 
-    user = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+    user = db.execute("SELECT * FROM users WHERE email = ?",
+                      (email,)).fetchone()
 
     if user is None:
         return jsonify({"error": "User is not found."}), 404
@@ -81,4 +80,5 @@ def login():
 
     token = jwt.encode(payload=payload_data, key=secret_key)
 
-    return jsonify({"message": "User logged in successfully.", "token": token}), 200
+    return jsonify(
+        {"message": "User logged in successfully.", "token": token}), 200

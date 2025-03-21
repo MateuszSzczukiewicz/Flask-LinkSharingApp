@@ -1,6 +1,8 @@
 import os
-from link_sharing_app import create_app
+
 from dotenv import load_dotenv
+
+from link_sharing_app import create_app
 
 load_dotenv()
 

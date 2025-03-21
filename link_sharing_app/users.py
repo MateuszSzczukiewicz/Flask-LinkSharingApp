@@ -1,8 +1,5 @@
-from flask import (
-    Blueprint,
-    jsonify,
-    request,
-)
+from flask import Blueprint, jsonify, request
+
 from .db import get_db
 
 bp = Blueprint("users", __name__, url_prefix="/users")
@@ -40,7 +37,12 @@ def edit_user_by_id(id):
     if data is None:
         return jsonify({"error": "Invalid JSON data."}), 400
 
-    allowed_fields = {"email", "password", "first_name", "last_name", "image_url"}
+    allowed_fields = {
+        "email",
+        "password",
+        "first_name",
+        "last_name",
+        "image_url"}
 
     for field in data:
         if field not in allowed_fields:

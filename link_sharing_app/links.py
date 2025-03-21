@@ -1,8 +1,5 @@
-from flask import (
-    Blueprint,
-    jsonify,
-    request,
-)
+from flask import Blueprint, jsonify, request
+
 from .db import get_db
 from .users import get_user
 
@@ -31,7 +28,8 @@ def get_all_links(user_id):
         (user_id,),
     ).fetchall()
 
-    return jsonify({"data": [dict(row) for row in links], "message": "Success."}), 200
+    return jsonify({"data": [dict(row)
+                   for row in links], "message": "Success."}), 200
 
 
 @bp.route("/", methods=["POST"])
