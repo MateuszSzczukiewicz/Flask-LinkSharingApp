@@ -1,22 +1,25 @@
 import os
-from flask import Flask
+from typing import Dict, Optional, Tuple
+
 from dotenv import load_dotenv
-from . import db
-from . import auth
-from . import users
-from . import links
+from flask import Flask
+
+from . import auth, db, links, users
 
 load_dotenv()
 
 
-def create_app(test_config=None):
+def create_app(test_config: Optional[Dict[str, bool | str]] = None) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
 
     secret_key = os.getenv("SECRET_KEY")
 
     app.config.from_mapping(
         SECRET_KEY=secret_key,
-        DATABASE=f"file:{os.path.join(app.instance_path, 'link_sharing_app.sqlite')}?mode=rwc",
+        DATABASE=f"file:{
+            os.path.join(
+                app.instance_path,
+                'link_sharing_app.sqlite')}?mode=rwc",
     )
 
     if test_config is None:
@@ -36,7 +39,7 @@ def create_app(test_config=None):
     app.register_blueprint(links.bp)
 
     @app.route("/")
-    def health_check():
+    def health_check() -> Tuple[Dict[str, str], int]:
         return {"status": "ok"}, 200
 
     return app

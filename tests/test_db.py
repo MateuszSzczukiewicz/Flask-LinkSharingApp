@@ -1,5 +1,7 @@
 import sqlite3
+
 import pytest
+
 from link_sharing_app.db import get_db
 
 

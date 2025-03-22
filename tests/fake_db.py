@@ -28,7 +28,8 @@ class FakeConnection:
         elif q_upper.startswith("INSERT"):
             if "INTO LINKS" in q_upper:
                 if len(params) >= 2 and params[1] == "Twitter":
-                    raise sqlite3.IntegrityError("Simulated IntegrityError on INSERT")
+                    raise sqlite3.IntegrityError(
+                        "Simulated IntegrityError on INSERT")
             return FakeCursor(None)
         elif q_upper.startswith("SELECT"):
             if "FROM USERS" in q_upper and "WHERE ID = ?" in q_upper:

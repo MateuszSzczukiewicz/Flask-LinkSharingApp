@@ -1,9 +1,0 @@
-services:
-  web:
-    build:
-      context: .
-      target: runner
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./instance:/app/instance
