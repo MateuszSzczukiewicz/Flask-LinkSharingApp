@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY pyproject.toml ./
 
-RUN pip install --no-cache-dir build && python -m build --wheel
-
 COPY . .
+
+RUN pip install --no-cache-dir build && python -m build --wheel
 
 FROM python:3.13-alpine AS runner
 
